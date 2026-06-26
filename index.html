@@ -3,767 +3,539 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Link Bypass</title>
+    <title>Bypass Link</title>
     <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f0c1b 0%, #1a103c 100%);
+            --panel-bg: rgba(255, 255, 255, 0.03);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --accent: #a855f7;
+            --accent-hover: #9333ea;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-gradient);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            color: var(--text-main);
+            overflow-x: hidden;
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 800px;
+            max-width: 680px;
             width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
             text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
             text-align: center;
-            color: #666;
-            margin-bottom: 30px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 35px;
         }
 
         .input-group {
             display: flex;
-            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--panel-border);
+            padding: 6px;
+            border-radius: 16px;
+            gap: 8px;
             margin-bottom: 20px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
         }
 
         input[type="url"] {
             flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            background: transparent;
+            border: none;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
         }
 
-        input[type="url"]:focus {
-            outline: none;
-            border-color: #667eea;
+        input[type="url"]::placeholder {
+            color: #555861;
         }
 
         button {
-            padding: 15px 30px;
-            background: #667eea;
+            padding: 12px 28px;
+            background: var(--accent);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
+            transition: all 0.2s ease;
         }
 
         button:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         button:disabled {
-            background: #ccc;
+            background: #374151;
+            color: #9ca3af;
             cursor: not-allowed;
             transform: none;
         }
 
         .options {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
         }
 
         .option {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.2s;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            user-select: none;
         }
 
         .option:hover {
-            background: #e9ecef;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
         }
 
         .option input {
+            accent-color: var(--accent);
             cursor: pointer;
         }
 
+        .status {
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid transparent;
+        }
+
+        .status.show { display: flex; }
+        .status.info { background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+        .status.success { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+        .status.error { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .status.warning { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: #fde047; }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .manual-input {
+            display: none;
+            margin-bottom: 25px;
+        }
+        .manual-input.show { display: block; }
+        
+        textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 16px;
+            color: #a7f3d0;
+            font-family: monospace;
+            font-size: 0.85rem;
+            min-height: 140px;
+            resize: vertical;
+            outline: none;
+        }
+        textarea:focus { border-color: var(--accent); }
+
         .result {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 25px;
             display: none;
         }
+        .result.show { display: block; animation: fadeIn 0.4s ease; }
 
-        .result.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
         .result-label {
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            font-size: 0.9em;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-weight: 700;
         }
 
         .result-url {
-            word-break: break-all;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            border: 1px solid #ddd;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--panel-border);
             font-family: monospace;
-            font-size: 14px;
-            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #fff;
+            word-break: break-all;
+            margin-bottom: 20px;
         }
 
         .result-actions {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
         }
 
-        .btn-secondary {
-            background: #28a745;
-            padding: 10px 20px;
-            font-size: 14px;
+        .btn-go { background: var(--success); }
+        .btn-go:hover { background: #059669; }
+        .btn-copy { background: rgba(255,255,255,0.08); color: var(--text-main); border: 1px solid var(--panel-border); }
+        .btn-copy:hover { background: rgba(255,255,255,0.15); }
+        .btn-reset { background: transparent; color: var(--text-muted); }
+        .btn-reset:hover { color: #fff; }
+
+        .supported {
+            margin-top: 40px;
+            border-top: 1px solid var(--panel-border);
+            padding-top: 24px;
         }
 
-        .btn-secondary:hover {
-            background: #218838;
+        .supported h3 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .btn-danger {
-            background: #dc3545;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-        }
-
-        .status {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            display: none;
-        }
-
-        .status.show {
-            display: block;
-        }
-
-        .status.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .status.warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .supported-sites {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .supported-sites h3 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .site-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .site-tag {
-            background: #667eea;
-            color: white;
-            padding: 5px 15px;
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--panel-border);
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 0.85em;
+            font-size: 0.8rem;
+            color: #d1d5db;
+        }
+        .tag.highlight {
+            border-color: rgba(168, 85, 247, 0.4);
+            color: #e9d5ff;
+            background: rgba(168, 85, 247, 0.05);
         }
 
-        .instructions {
-            margin-top: 30px;
-            padding: 20px;
-            background: #e7f3ff;
-            border-radius: 10px;
-            border-left: 4px solid #0066cc;
-        }
-
-        .instructions h3 {
-            margin-bottom: 15px;
-            color: #0066cc;
-        }
-
-        .instructions ol {
-            margin-left: 20px;
-            line-height: 1.8;
-        }
-
-        .instructions li {
-            margin-bottom: 10px;
-        }
-
-        .manual-input {
-            margin-top: 20px;
-            display: none;
-        }
-
-        .manual-input.show {
-            display: block;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-family: monospace;
-            font-size: 13px;
-            resize: vertical;
-            min-height: 200px;
-        }
-
-        .history {
-            margin-top: 30px;
-        }
-
-        .history h3 {
-            margin-bottom: 15px;
-            color: #333;
-        }
-
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            word-break: break-all;
-        }
-
-        .history-item a {
-            color: #667eea;
-            text-decoration: none;
-            flex: 1;
-            margin-right: 10px;
-        }
-
-        .history-item a:hover {
-            text-decoration: underline;
-        }
-
-        .clear-history {
-            margin-top: 10px;
-            background: #6c757d;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
-            
-            .input-group {
-                flex-direction: column;
-            }
+        @media (max-width: 520px) {
+            .container { padding: 24px; }
+            .input-group { flex-direction: column; background: transparent; border: none; padding: 0; }
+            input[type="url"], button { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--panel-border); border-radius: 12px; }
+            button { background: var(--accent); }
+            .result-actions { flex-direction: column; }
         }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>🔗 Universal Link Bypass</h1>
-        <p class="subtitle">Skip annoying ad pages and timers instantly</p>
+        <h1>Bypass Link</h1>
+        <p class="subtitle">Instantly clean links and circumvent destination loops</p>
 
         <div class="input-group">
-            <input type="url" id="urlInput" placeholder="Paste your link here (e.g., https://loot-links.com/...)" />
-            <button onclick="bypassLink()" id="bypassBtn">Bypass</button>
+            <input type="url" id="urlInput" placeholder="Paste target URL here..." autocomplete="off">
+            <button onclick="handleBypass()" id="actionBtn">Bypass</button>
         </div>
 
         <div class="options">
             <label class="option">
                 <input type="checkbox" id="useProxy" checked>
-                <span>Use CORS Proxy (recommended)</span>
-            </label>
-            <label class="option">
-                <input type="checkbox" id="followRedirects">
-                <span>Follow Redirects</span>
+                <span>CORS Proxy Layer</span>
             </label>
             <label class="option">
                 <input type="checkbox" id="manualMode">
-                <span>Manual Mode (paste HTML)</span>
+                <span>Manual DOM Inspect</span>
             </label>
         </div>
 
-        <div id="status" class="status"></div>
+        <div id="statusBox" class="status"></div>
 
-        <div id="manualInput" class="manual-input">
-            <p>Paste the page source HTML below:</p>
-            <textarea id="htmlInput" placeholder="Right-click the ad page → View Page Source → Copy all → Paste here"></textarea>
+        <div id="manualWrapper" class="manual-input">
+            <textarea id="htmlInput" placeholder="Paste destination view-source HTML markup here if automatic extraction gets rate-limited..."></textarea>
         </div>
 
-        <div id="result" class="result">
-            <div class="result-label">Destination URL</div>
+        <div id="resultBox" class="result">
+            <div class="result-label">Resolved Destination</div>
             <div class="result-url" id="resultUrl"></div>
             <div class="result-actions">
-                <button class="btn-secondary" onclick="openLink()">Open Link</button>
-                <button class="btn-secondary" onclick="copyResult()">Copy</button>
-                <button class="btn-danger" onclick="resetForm()">New Link</button>
+                <button class="btn-go" onclick="launchLink()">Navigate</button>
+                <button class="btn-copy" onclick="copyDestination()">Copy Link</button>
+                <button class="btn-reset" onclick="clearAll()">Reset</button>
             </div>
         </div>
 
-        <div class="supported-sites">
-            <h3>✅ Supported Sites</h3>
-            <div class="site-list">
-                <span class="site-tag">loot-links</span>
-                <span class="site-tag">linkvertise</span>
-                <span class="site-tag">adf.ly</span>
-                <span class="site-tag">ouo.io</span>
-                <span class="site-tag">fc.lc</span>
-                <span class="site-tag">shorte.st</span>
-                <span class="site-tag">cutt.ly</span>
-                <span class="site-tag">bit.ly</span>
-                <span class="site-tag">tinyurl</span>
-                <span class="site-tag">rebrandly</span>
-                <span class="site-tag">+ many more</span>
+        <div class="supported">
+            <h3>Optimized Pipeline Components</h3>
+            <div class="tags">
+                <span class="tag highlight">platorealy.com</span>
+                <span class="tag">loot-links</span>
+                <span class="tag">linkvertise</span>
+                <span class="tag">ouo.io</span>
+                <span class="tag">adf.ly</span>
+                <span class="tag">bit.ly</span>
             </div>
-        </div>
-
-        <div class="history" id="historySection" style="display: none;">
-            <h3>📋 Recent Bypasses</h3>
-            <div id="historyList"></div>
-            <button class="clear-history" onclick="clearHistory()">Clear History</button>
-        </div>
-
-        <div class="instructions">
-            <h3>📖 How to Use</h3>
-            <ol>
-                <li><strong>Direct Method:</strong> Paste the short link and click "Bypass"</li>
-                <li><strong>If that fails:</strong> Enable "Manual Mode" and paste the page HTML source</li>
-                <li><strong>For stubborn sites:</strong> Disable CORS proxy and use browser extension to fetch</li>
-                <li><strong>GitHub Pages:</strong> This works entirely client-side - no server needed!</li>
-            </ol>
         </div>
     </div>
 
     <script>
-        // CORS Proxies (rotated for reliability)
-        const CORS_PROXIES = [
-            'https://api.allorigins.win/raw?url=',
+        const CLOUD_PROXIES = [
             'https://corsproxy.io/?',
+            'https://api.allorigins.win/raw?url=',
             'https://api.codetabs.com/v1/proxy?quest='
         ];
+        let rotationIdx = 0;
+        let resolvedUri = '';
 
-        let currentResult = '';
-        let proxyIndex = 0;
-
-        // Load history on startup
-        loadHistory();
-
-        // Toggle manual mode
         document.getElementById('manualMode').addEventListener('change', (e) => {
-            document.getElementById('manualInput').classList.toggle('show', e.target.checked);
+            document.getElementById('manualWrapper').classList.toggle('show', e.target.checked);
         });
 
-        // Handle Enter key
         document.getElementById('urlInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') bypassLink();
+            if (e.key === 'Enter') handleBypass();
         });
 
-        function showStatus(message, type = 'info') {
-            const status = document.getElementById('status');
-            status.className = `status ${type} show`;
-            status.innerHTML = type === 'info' ? `<span class="loading"></span>${message}` : message;
+        function updateStatus(msg, type = 'info') {
+            const box = document.getElementById('statusBox');
+            if(!msg) { box.classList.remove('show'); return; }
+            box.className = `status ${type} show`;
+            box.innerHTML = type === 'info' ? `<div class="spinner"></div><span>${msg}</span>` : `<span>${msg}</span>`;
         }
 
-        function hideStatus() {
-            document.getElementById('status').classList.remove('show');
-        }
+        async function handleBypass() {
+            const target = document.getElementById('urlInput').value.trim();
+            const manual = document.getElementById('manualMode').checked;
 
-        async function bypassLink() {
-            const url = document.getElementById('urlInput').value.trim();
-            const manualMode = document.getElementById('manualMode').checked;
+            if (!target && !manual) return updateStatus('Please provide a URL asset.', 'error');
             
-            if (!url && !manualMode) {
-                showStatus('Please enter a URL', 'error');
-                return;
-            }
-
-            const btn = document.getElementById('bypassBtn');
+            const btn = document.getElementById('actionBtn');
             btn.disabled = true;
-            showStatus('Analyzing link...', 'info');
+            updateStatus('Evaluating route structure...', 'info');
 
             try {
-                let result;
-                
-                if (manualMode) {
-                    const html = document.getElementById('htmlInput').value;
-                    if (!html) {
-                        showStatus('Please paste HTML content', 'error');
-                        return;
-                    }
-                    result = parseHTML(html, url);
+                let out;
+                if (manual) {
+                    const dynamicHtml = document.getElementById('htmlInput').value;
+                    if(!dynamicHtml) throw new Error('Source context empty.');
+                    out = evaluateDOM(dynamicHtml, target);
                 } else {
-                    result = await fetchAndParse(url);
+                    out = await pullRoute(target);
                 }
 
-                if (result) {
-                    displayResult(result);
-                    addToHistory(url, result);
-                    showStatus('Success! Link bypassed.', 'success');
+                if (out) {
+                    resolvedUri = out;
+                    document.getElementById('resultUrl').textContent = out;
+                    document.getElementById('resultBox').classList.add('show');
+                    updateStatus('Verification complete.', 'success');
                 } else {
-                    showStatus('Could not find destination URL. Try Manual Mode.', 'warning');
+                    updateStatus('Deep extraction failed. Try using Manual DOM Inspect mode.', 'warning');
                 }
-            } catch (error) {
-                showStatus(`Error: ${error.message}. Try disabling CORS proxy or using Manual Mode.`, 'error');
+            } catch (err) {
+                updateStatus(`Pipeline error: ${err.message}`, 'error');
             } finally {
                 btn.disabled = false;
             }
         }
 
-        async function fetchAndParse(url) {
-            const useProxy = document.getElementById('useProxy').checked;
-            
-            // Method 1: Try direct fetch (might fail due to CORS)
-            if (!useProxy) {
+        async function pullRoute(uri) {
+            // Priority 1: Direct structural parameter decoding
+            const parametricMatch = searchParams(uri);
+            if (parametricMatch) return parametricMatch;
+
+            const proxyActive = document.getElementById('useProxy').checked;
+            if (!proxyActive) {
                 try {
-                    const response = await fetch(url, {
-                        method: 'GET',
-                        redirect: 'follow'
-                    });
-                    const html = await response.text();
-                    const result = parseHTML(html, url);
-                    if (result) return result;
-                } catch (e) {
-                    console.log('Direct fetch failed, trying proxy...');
-                }
+                    const res = await fetch(uri, { method: 'GET', redirect: 'follow' });
+                    return evaluateDOM(await res.text(), uri);
+                } catch(e) {}
             }
 
-            // Method 2: Use CORS proxy
-            if (useProxy) {
-                for (let i = 0; i < CORS_PROXIES.length; i++) {
-                    const proxy = CORS_PROXIES[(proxyIndex + i) % CORS_PROXIES.length];
-                    try {
-                        const response = await fetch(proxy + encodeURIComponent(url), {
-                            method: 'GET',
-                            headers: {
-                                'Origin': window.location.origin
-                            }
-                        });
-                        
-                        if (!response.ok) continue;
-                        
-                        const html = await response.text();
-                        const result = parseHTML(html, url);
-                        if (result) {
-                            proxyIndex = (proxyIndex + i) % CORS_PROXIES.length;
-                            return result;
-                        }
-                    } catch (e) {
-                        continue;
-                    }
-                }
-            }
-
-            // Method 3: Try to extract from URL patterns
-            const urlPattern = extractFromURL(url);
-            if (urlPattern) return urlPattern;
-
-            return null;
-        }
-
-        function parseHTML(html, baseUrl) {
-            // Create a DOM parser
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-
-            // Pattern 1: Meta refresh
-            const metaRefresh = doc.querySelector('meta[http-equiv="refresh"]');
-            if (metaRefresh) {
-                const content = metaRefresh.getAttribute('content');
-                const match = content.match(/url=['"]?([^'";]+)['"]?/i);
-                if (match) return resolveURL(match[1], baseUrl);
-            }
-
-            // Pattern 2: Canonical link
-            const canonical = doc.querySelector('link[rel="canonical"]');
-            if (canonical && canonical.href !== baseUrl) {
-                return canonical.href;
-            }
-
-            // Pattern 3: Open Graph URL
-            const ogUrl = doc.querySelector('meta[property="og:url"]');
-            if (ogUrl && ogUrl.content !== baseUrl) {
-                return ogUrl.content;
-            }
-
-            // Pattern 4: JavaScript redirects
-            const scripts = doc.querySelectorAll('script');
-            for (const script of scripts) {
-                const text = script.textContent;
-                
-                // window.location patterns
-                const patterns = [
-                    /window\.location\.href\s*=\s*["']([^"']+)["']/,
-                    /window\.location\.replace\s*\(\s*["']([^"']+)["']\s*\)/,
-                    /window\.location\s*=\s*["']([^"']+)["']/,
-                    /location\.href\s*=\s*["']([^"']+)["']/,
-                    /window\.open\s*\(\s*["']([^"']+)["']/,
-                    /"redirectUrl"\s*:\s*"([^"]+)"/,
-                    /"url"\s*:\s*"([^"]+)"/,
-                    /"destination"\s*:\s*"([^"]+)"/,
-                    /"target"\s*:\s*"([^"]+)"/,
-                    /data-redirect\s*=\s*["']([^"']+)["']/,
-                    /data-url\s*=\s*["']([^"']+)["']/
-                ];
-
-                for (const pattern of patterns) {
-                    const match = text.match(pattern);
-                    if (match) {
-                        const url = match[1].replace(/\\x([0-9A-Fa-f]{2})/g, (match, p1) => String.fromCharCode(parseInt(p1, 16)));
-                        if (url && !url.includes('javascript:')) {
-                            return resolveURL(url, baseUrl);
-                        }
-                    }
-                }
-            }
-
-            // Pattern 5: Data attributes
-            const dataElements = doc.querySelectorAll('[data-redirect], [data-url], [data-href], [data-destination]');
-            for (const el of dataElements) {
-                const url = el.getAttribute('data-redirect') ||
-                          el.getAttribute('data-url') ||
-                          el.getAttribute('data-href') ||
-                          el.getAttribute('data-destination');
-                if (url) return resolveURL(url, baseUrl);
-            }
-
-            // Pattern 6: Linkvertise specific
-            if (baseUrl.includes('linkvertise')) {
-                const match = html.match(/"target":"(https?:[^"]+)"/);
-                if (match) return match[1].replace(/\\/g, '');
-            }
-
-            // Pattern 7: ouo.io specific
-            if (baseUrl.includes('ouo.io')) {
-                const match = html.match(/"location"\s*:\s*"(https?:[^"]+)"/);
-                if (match) return match[1].replace(/\\/g, '');
-            }
-
-            // Pattern 8: Form actions
-            const forms = doc.querySelectorAll('form');
-            for (const form of forms) {
-                const action = form.getAttribute('action');
-                if (action && action.startsWith('http')) {
-                    return resolveURL(action, baseUrl);
-                }
-            }
-
-            // Pattern 9: Hidden inputs with URLs
-            const hiddenInputs = doc.querySelectorAll('input[type="hidden"]');
-            for (const input of hiddenInputs) {
-                const value = input.value;
-                if (value && (value.startsWith('http') || value.startsWith('/'))) {
-                    return resolveURL(value, baseUrl);
-                }
-            }
-
-            // Pattern 10: Look for any anchor with external href
-            const links = doc.querySelectorAll('a[href^="http"]');
-            for (const link of links) {
-                if (link.href !== baseUrl && !link.href.includes(window.location.hostname)) {
-                    // Filter out common ad domains
-                    const adDomains = ['google', 'facebook', 'twitter', 'ads'];
-                    if (!adDomains.some(domain => link.href.includes(domain))) {
-                        return link.href;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        function extractFromURL(url) {
-            // Handle known patterns in URL parameters
-            const params = new URLSearchParams(window.location.search);
-            
-            // Common parameter names
-            const paramNames = ['url', 'link', 'target', 'redirect', 'goto', 'dest', 'destination', 'r', 'u'];
-            for (const name of paramNames) {
-                const value = params.get(name);
-                if (value) {
-                    try {
-                        return decodeURIComponent(value);
-                    } catch (e) {
-                        return value;
-                    }
-                }
-            }
-
-            // Base64 encoded in URL
-            const base64Pattern = url.match(/[?&]([a-zA-Z0-9_-]{20,})/);
-            if (base64Pattern) {
+            // Priority 2: Distributed Cloud Engine proxies
+            for (let i = 0; i < CLOUD_PROXIES.length; i++) {
+                const head = CLOUD_PROXIES[(rotationIdx + i) % CLOUD_PROXIES.length];
                 try {
-                    const decoded = atob(base64Pattern[1]);
-                    if (decoded.startsWith('http')) return decoded;
+                    const edgeRes = await fetch(head + encodeURIComponent(uri));
+                    if (!edgeRes.ok) continue;
+                    const cleanHtml = await edgeRes.text();
+                    const finalized = evaluateDOM(cleanHtml, uri);
+                    if (finalized) {
+                        rotationIdx = (rotationIdx + i) % CLOUD_PROXIES.length;
+                        return finalized;
+                    }
                 } catch (e) {}
             }
-
             return null;
         }
 
-        function resolveURL(url, base) {
+        function evaluateDOM(html, base) {
+            const parsedDoc = new DOMParser().parseFromString(html, 'text/html');
+
+            // PlatoRealy, Linkvertise structural configurations and JSON payload captures
+            if (base.includes('platorealy') || base.includes('auth.platorealy')) {
+                // Look for common dynamic redirect variables script formats
+                const scriptBlobs = parsedDoc.querySelectorAll('script');
+                for (const node of scriptBlobs) {
+                    const content = node.textContent;
+                    // Match configurations containing target parameters inside token objects
+                    const jsonExtractor = content.match(/"target"\s*:\s*"([^"]+)"/) || 
+                                          content.match(/key\s*:\s*['"]([^'"]+)['"]/);
+                    if(jsonExtractor) {
+                        const san = jsonExtractor[1].replace(/\\/g, '');
+                        if(san.startsWith('http')) return san;
+                    }
+                }
+            }
+
+            // Meta directives fallback logic
+            const meta = parsedDoc.querySelector('meta[http-equiv="refresh"]');
+            if (meta) {
+                const directive = meta.getAttribute('content');
+                const parsedTag = directive.match(/url=['"]?([^'";]+)['"]?/i);
+                if (parsedTag) return safeCombine(parsedTag[1], base);
+            }
+
+            // JavaScript environment execution variable capture checks
+            const standardPatterns = [
+                /window\.location\.href\s*=\s*["']([^"']+)["']/,
+                /window\.location\s*=\s*["']([^"']+)["']/,
+                /location\.href\s*=\s*["']([^"']+)["']/,
+                /"redirectUrl"\s*:\s*"([^"]+)"/,
+                /"url"\s*:\s*"([^"]+)"/
+            ];
+
+            for (const scriptNode of parsedDoc.querySelectorAll('script')) {
+                const text = scriptNode.textContent;
+                for (const regex of standardPatterns) {
+                    const extract = text.match(regex);
+                    if (extract) {
+                        const outputStr = extract[1].replace(/\\x([0-9A-Fa-f]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+                        if (outputStr && !outputStr.includes('javascript:')) return safeCombine(outputStr, base);
+                    }
+                }
+            }
+
+            // Anchor verification filters
+            const hyperLinks = parsedDoc.querySelectorAll('a[href^="http"]');
+            for (const item of hyperLinks) {
+                if (item.href !== base && !item.href.includes(window.location.hostname)) {
+                    if (!['google', 'facebook', 'captcha', 'recaptcha', 'ads'].some(x => item.href.includes(x))) {
+                        return item.href;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function searchParams(uri) {
             try {
-                return new URL(url, base).href;
-            } catch (e) {
-                return url;
-            }
+                const instances = new URL(uri);
+                const parameters = instances.searchParams;
+                // Extended checking for downstream query structures
+                const tags = ['url', 'link', 'target', 'redirect', 'goto', 'dest', 'destination', 'r', 'u', 'endpoint', 'to'];
+                for (const parameterKey of tags) {
+                    const targetString = parameters.get(parameterKey);
+                    if (targetString) {
+                        return targetString.startsWith('http') ? targetString : decodeURIComponent(targetString);
+                    }
+                }
+                
+                // Route check for base64 obfuscations
+                const payloadMatch = uri.match(/[?&]([a-zA-Z0-9_-]{24,})/);
+                if (payloadMatch) {
+                    const plain = atob(payloadMatch[1]);
+                    if (plain.startsWith('http')) return plain;
+                }
+            } catch (e) {}
+            return null;
         }
 
-        function displayResult(url) {
-            currentResult = url;
-            document.getElementById('resultUrl').textContent = url;
-            document.getElementById('result').classList.add('show');
+        function safeCombine(url, base) {
+            try { return new URL(url, base).href; } catch (e) { return url; }
         }
 
-        function openLink() {
-            if (currentResult) {
-                window.open(currentResult, '_blank');
-            }
-        }
+        function launchLink() { if (resolvedUri) window.open(resolvedUri, '_blank'); }
 
-        function copyResult() {
-            if (currentResult) {
-                navigator.clipboard.writeText(currentResult).then(() => {
-                    showStatus('Copied to clipboard!', 'success');
-                    setTimeout(hideStatus, 2000);
+        function copyDestination() {
+            if (resolvedUri) {
+                navigator.clipboard.writeText(resolvedUri).then(() => {
+                    const originalText = document.getElementById('statusBox').innerHTML;
+                    updateStatus('Copied link target context.', 'success');
+                    setTimeout(() => updateStatus(''), 1500);
                 });
             }
         }
 
-        function resetForm() {
+        function clearAll() {
             document.getElementById('urlInput').value = '';
             document.getElementById('htmlInput').value = '';
-            document.getElementById('result').classList.remove('show');
+            document.getElementById('resultBox').classList.remove('show');
             document.getElementById('manualMode').checked = false;
-            document.getElementById('manualInput').classList.remove('show');
-            hideStatus();
-            currentResult = '';
-        }
-
-        // History management
-        function addToHistory(original, bypassed) {
-            let history = JSON.parse(localStorage.getItem('bypassHistory') || '[]');
-            history.unshift({ original, bypassed, time: new Date().toLocaleString() });
-            history = history.slice(0, 10); // Keep last 10
-            localStorage.setItem('bypassHistory', JSON.stringify(history));
-            loadHistory();
-        }
-
-        function loadHistory() {
-            const history = JSON.parse(localStorage.getItem('bypassHistory') || '[]');
-            const section = document.getElementById('historySection');
-            const list = document.getElementById('historyList');
-            
-            if (history.length === 0) {
-                section.style.display = 'none';
-                return;
-            }
-
-            section.style.display = 'block';
-            list.innerHTML = history.map(item => `
-                <div class="history-item">
-                    <a href="${item.bypassed}" target="_blank">${item.bypassed}</a>
-                    <small>${item.time}</small>
-                </div>
-            `).join('');
-        }
-
-        function clearHistory() {
-            localStorage.removeItem('bypassHistory');
-            loadHistory();
+            document.getElementById('manualWrapper').classList.remove('show');
+            updateStatus('');
+            resolvedUri = '';
         }
     </script>
 </body>
-  </html>
+</html>
+
